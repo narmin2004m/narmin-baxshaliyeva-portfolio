@@ -1,0 +1,27 @@
+name: Deploy Portfolio
+
+# Bu workflow her main branch-e push edildikde ise dusur
+on:
+  push:
+    branches: [ main ]
+
+# GitHub Actions-a gh-pages branch-e yaza bilmek ucun lazimdir
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: GitHub Pages-e Deploy Et
+    runs-on: ubuntu-latest
+
+    steps:
+      # Addim 1: Kodu runner-a yukle
+      - name: Kodu yukle
+        uses: actions/checkout@v4
+
+      # Addim 2: Portfolio-nu GitHub Pages-e deploy et
+      - name: GitHub Pages-e deploy et
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .        # butun fayllari deploy edirik
+          branch: gh-pages # deployment bu branch-e gedir
