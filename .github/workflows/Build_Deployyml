@@ -1,0 +1,44 @@
+name: Build_Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Prepare build
+        run: |
+          mkdir -p dist
+          cp index.html dist/index.html
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel config
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: vercel deploy dist --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Create deployment log
+        run: |
+          mkdir -p release
+          echo "DEPLOY SUCCESS" > release/log.txt
+          date >> release/log.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-log
+          path: release/log.txt
