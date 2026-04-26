@@ -1,0 +1,42 @@
+name: Build_Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate HTML structure
+        run: |
+          echo "Checking HTML structure..."
+          grep -q "<!DOCTYPE html>" index.html
+          grep -q "<title>" index.html
+          grep -q "</html>" index.html
+
+      - name: Check portfolio sections
+        run: |
+          echo "Checking sections..."
+          grep -q "Haqqımda" index.html
+          grep -q "Bacarıqlar" index.html
+          grep -q "Layihələr" index.html
+          grep -q "Əlaqə" index.html
+
+      - name: Generate CI report
+        run: |
+          mkdir -p reports
+          echo "CI TEST REPORT" > reports/report.txt
+          echo "All checks passed" >> reports/report.txt
+          date >> reports/report.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-report
+          path: reports/report.txt
